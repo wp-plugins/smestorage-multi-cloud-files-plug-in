@@ -1,6 +1,6 @@
 === SMEStorage Multi-Cloud WordPress Backup ===
-Contributors: James Liddle
-Tags: cloud, backup
+Contributors: SMEStorage
+Tags: cloud, Cloud, Backup, Amazon, S3, RackSpace, Cloud Files, FTP, GMail, Email, Box.net, MobileMe, iDisk, WebDav, Microsoft, SkyDrive
 Requires at least: 2.6
 Tested up to: 2.8
 Stable tag: 1.0
