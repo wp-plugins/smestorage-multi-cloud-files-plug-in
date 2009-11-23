@@ -1,85 +1,9 @@
 <?
 
 define('_SERVICE_URL','http://www.smetube.com/smestorage/api/');
-define('_UPLOADER_URL','http://www.smetube.com/cgi-bin/uploader/uploader1.cgi');
-
-$token=$_REQUEST['token'];
-
 
 require("http.php");
 require('class.xmltoarray.php');
-
-
-//check permissions of upload dir
-$dir=dirname(__FILE__).'/upl';
-if(!is_writable($dir)){
-	echo '"'.$dir.'" directory does not exists or is not writable';
-	exit;
-}
-
-if($token=='' && $_REQUEST['login']==''){
-	//show login form
-	$_SESSION['fpath'];
-	?>
-	<script language="javascript">
-	function formsubmit()
-	{
-		//alert("hi");
-		document.form1.submit();
-		return true;
-	}
-	</script>
-	<body onLoad="formsubmit()">
-	<title>SEMStorage API demo</title>
-	Use your SMEStorage login info here<br>
-	<form name="form1">
-	Login:<input name="login" type="text" value="<? echo $_SESSION['user'];?>"><br>
-	Password:<input name="password" type="password" value="<? echo $_SESSION['pass'];?>"><br>
-	<input type="submit">
-	</form>
-	<?
-	exit;
-}elseif($token=='' && $_REQUEST['login']!=''){
-	//process login and get token
-	$a= processRequest('*/gettoken/'.encodeArgs(array($_REQUEST['login'],$_REQUEST['password'])));//,array(),array(),1
-	
-	if($a[0]==''){
-		//if 
-		if($a[1]['notice']=='1'){
-			//must provide provider info
-			?>
-			<title>SEMStorage API demo. Login to provider.</title>
-			You must to enter your provider access info (login/password for Gmail or keys for Amazon S3)<br>
-			<form>
-			Login:<input name="login" type="text"><br>
-			Password:<input name="password" type="password"><br>
-			<input name="token" type="hidden" value="<?=$a[1]['token']?>">
-			<input name="action" type="hidden" value="providerlogin">
-			<input type="submit" value="Continue">
-			</form>
-			<?
-			exit;
-		}
-		//if login success redirect with token
-
-		header('Location: index.php?token='.$a[1]['token'].'&message=Last+visit:+'.$a[1]['lastlogin']);	
-		exit;
-	}else
-	echo '<font color="red">'.$a[0].'</font>';
-	return;
-}
-
-//controller
-//there are all possible actions
-$action=$_REQUEST['action'];
-if($action=='providerlogin'){
-	//move file to another folder
-	$a= processRequest($token.'/setProviderData/'.encodeArgs(array(
-		$_REQUEST['login'],
-		$_REQUEST['password'])));
-	//print_r($a);
-	header('Location: index.php?token='.$token.'&message='.$a[1]['statusmessage']);
-}
 
 
 /**
