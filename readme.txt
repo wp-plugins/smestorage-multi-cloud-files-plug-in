@@ -3,7 +3,7 @@ Contributors: SMEStorage
 Tags: Cloud, Backup, Amazon, S3, RackSpace, Cloud Files, FTP, GMail, Email, Box.net, MobileMe, iDisk, WebDav, Microsoft, SkyDrive
 Requires at least: 2.6
 Tested up to: 3.0.1
-Stable tag: 1.2
+Stable tag: 1.3
 
 Back your WordPress blog up to any one of 10 storage clouds including S3, CloudFiles, MobileME, Gmail & Box.net
 == Description ==
