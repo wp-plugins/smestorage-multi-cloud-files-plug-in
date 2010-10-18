@@ -1,6 +1,8 @@
 <?
 
-define('_SERVICE_URL','http://www.smetube.com/smestorage/api/');
+// define('_SERVICE_URL','http://www.smetube.com/smestorage/api/');
+define('_SERVICE_URL','http://www.smestorage.com/api/');
+
 
 require("http.php");
 require('class.xmltoarray.php');
@@ -17,6 +19,7 @@ function processRequest($request,$debug=0,$data=array(),$files=array()){
 	//$http->data_timeout=0;
 	$http->debug=($debug==2)?1:0;
 	$http->html_debug=1;
+	$http->follow_redirect=1;
 
 	$url=_SERVICE_URL.$request;
 //	echo $url.'<br>';
