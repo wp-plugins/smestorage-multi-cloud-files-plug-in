@@ -2,10 +2,10 @@
 /*
 Plugin Name: WordPress Database Backup for SME Storage
 Plugin URI: http://www.smestorage.com/
-Description: On-demand backup of your WordPress database.Based on <a href="http://wordpress.org/extend/plugins/wp-db-backup/">WP-DB-Backup</a> This plug-in is licensed under GNU GPL, version 2. Source code is available from <a href="http://code.google.com/p/smestorage/">http://code.google.com/p/smestorage</a>
+Description: On-demand backup of your WordPress database. Based on <a href="http://wordpress.org/extend/plugins/wp-db-backup/">WP-DB-Backup</a> This plug-in is licensed under GNU GPL, version 2. Source code is available from <a href="http://code.google.com/p/smestorage/">http://code.google.com/p/smestorage</a>
 Author: SME Storage 
 Author URI: http://www.smestorage.com/
-Version: 1.4
+Version: 1.5
 
 */
  session_start();		
@@ -435,7 +435,45 @@ class wpdbBackup {
 			return $res;
 		}
 	}
+
+	function folderToArchive($archive, $dir, $ignorePath){
+#echo "folderToArchive($archive, $dir, $ignorePath)<br>";
+		$hdl=opendir($dir);
 	
+		$a=new PclZip($archive);
+	
+		$countElements=0;	
+		while($file = readdir($hdl)){
+			if($file=='.' || $file=='..') continue;
+
+			$countElements++;
+			$fname=str_replace('//','/',$dir.'/'.$file);
+			if(is_file($fname)){
+#				echo 'File '.$file.'<br>';
+				if(!file_exists($archive)){
+					$e=$a->create($fname, PCLZIP_OPT_REMOVE_PATH, $ignorePath);
+				}else{
+					$e=$a->add($fname, PCLZIP_OPT_REMOVE_PATH, $ignorePath);
+				}
+			}else{
+#				echo 'Dir '.$file.'<br>';
+				$this->folderToArchive($archive, $fname, $ignorePath);
+			}
+		}
+	
+		closedir($hdl);
+#echo "countFiles=$countElements<br>";
+		if($countElements<1){
+			if(!file_exists($archive)){
+				$e=$a->create($dir, PCLZIP_OPT_REMOVE_PATH, $ignorePath);
+			}else{
+				$e=$a->add($dir, PCLZIP_OPT_REMOVE_PATH, $ignorePath);
+			}
+		}
+		
+		return true;
+	}
+
 	function backup_uploads($filename){
 		include('../wp-content/plugins/wp-db-backup/pclzip.lib.php');
 
@@ -450,11 +488,10 @@ class wpdbBackup {
 
 		if(strlen($error)<1){
 #echo $path . '<br>';
-			$archive = new PclZip($path);
-			$e=$archive->create('../wp-content/uploads/2010', PCLZIP_OPT_REMOVE_PATH, '../wp-content');
-			if($e==0){
-				$error=(__('Could not open the backup file for writing!','wp-db-backup'));
-			}
+#			$archive = new PclZip($path);
+#			$e=$archive->create('../wp-content/uploads', PCLZIP_OPT_REMOVE_PATH, '../wp-content');
+			$adir='../wp-content/uploads';
+			$this->folderToArchive($path, $adir, $adir);
 		}
 		
 		if(strlen($error)<1){
@@ -938,7 +975,7 @@ class wpdbBackup {
 	}
 
 	function admin_menu() {
-		$_page_hook = add_management_page(__('Backup','wp-db-backup'), __('Backup','wp-db-backup'), 'import', $this->basename, array(&$this, 'backup_menu'));
+		$_page_hook = add_management_page(__('Cloud Backup','wp-db-backup'), __('Cloud Backup','wp-db-backup'), 'import', $this->basename, array(&$this, 'backup_menu'));
 		add_action('load-' . $_page_hook, array(&$this, 'admin_load'));
 		if( function_exists('add_contextual_help') ) {
 			$text = $this->help_menu();
@@ -947,7 +984,7 @@ class wpdbBackup {
 	}
 
 	function fragment_menu() {
-		$page_hook = add_management_page(__('Backup','wp-db-backup'), __('Backup','wp-db-backup'), 'import', $this->basename, array(&$this, 'build_backup_script'));
+		$page_hook = add_management_page(__('Cloud Backup','wp-db-backup'), __('Cloud Backup','wp-db-backup'), 'import', $this->basename, array(&$this, 'build_backup_script'));
 		add_action('load-' . $page_hook, array(&$this, 'admin_load'));
 	}
 
@@ -1541,7 +1578,7 @@ class wpdbBackup {
 		if( !file_exists($this->backup_dir . 'index.php') )
 			@ touch($this->backup_dir . 'index.php');
 		?><div class='wrap'>
-		<h2><?php _e('Backup','wp-db-backup') ?></h2>
+		<h2><?php _e('Cloud Backup','wp-db-backup') ?></h2>
 		<h3>SMEStorage Cloud Backup</h3>
 		<p>This plug-in enables you to backup your WordPress database and content to SMEStorage which uses its cloud gateway to enable you to store your files directly on the storage clouds of your choice. These include Amazon S3, RackSpace Cloud Files, Box.net, Microsoft SkyDrive, Microsoft Live Mesh, Google Docs, DropBox, Mezeo, FTP, and any WebDav enable cloud. Contact us <a href="mailto:sales@smestorage.com">sales@smestorage.com</a> about our professional option which includes the ability to encrypt the backup and to also schedule it.</p>
 		<?  $username = get_option('username');
