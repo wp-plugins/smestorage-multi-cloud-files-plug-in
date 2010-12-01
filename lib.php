@@ -1,12 +1,6 @@
 <?
-
-// define('_SERVICE_URL','http://www.smetube.com/smestorage/api/');
+//define('_SERVICE_URL','http://www.smetube.com/smestorage/api/');
 define('_SERVICE_URL','http://www.smestorage.com/api/');
-
-
-require("http.php");
-require('class.xmltoarray.php');
-
 
 /**
 * Takes REST command, process request and return array created from returned xml document
@@ -22,6 +16,8 @@ function processRequest($request,$debug=0,$data=array(),$files=array()){
 	$http->follow_redirect=1;
 
 	$url=_SERVICE_URL.$request;
+
+
 //	echo $url.'<br>';
 	if($debug>0){
 		echo $url.'<br>';
@@ -58,7 +54,6 @@ function processRequest($request,$debug=0,$data=array(),$files=array()){
 
 			if($result[0]=="")
 			{
-
 				$result[0]=$http->ReadReplyBody($body,1000000);
 				if($debug>0)
 					echo $body;
@@ -78,8 +73,6 @@ function processRequest($request,$debug=0,$data=array(),$files=array()){
 		$http->Close();
 	}
 	return $result;
-		
-		
 }
 /**
 * Encode arguments with base64 encoding and join with comma delimiter

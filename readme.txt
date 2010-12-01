@@ -3,11 +3,11 @@ Contributors: SMEStorage
 Tags: Cloud, Backup, Amazon, S3, RackSpace, Cloud Files, FTP, GMail, Email, Box.net, MobileMe, iDisk, WebDav, Microsoft, SkyDrive
 Requires at least: 2.6
 Tested up to: 3.0.1
-Stable tag: 1.3
+Stable tag: 1.5
 
 Back your WordPress blog up to any one of 10 storage clouds including S3, CloudFiles, MobileME, Gmail & Box.net
 == Description ==
-Back your WordPress blog up to any one of 10 storage clouds including S3, CloudFiles, MobileME, Gmail & Box.net
+This plug-in enables you to backup your WordPress database and content to SMEStorage which uses its cloud gateway to enable you to store your files directly on the storage clouds of your choice. These include Amazon S3, RackSpace Cloud Files, Box.net, Microsoft SkyDrive, Microsoft Live Mesh, Google Docs, DropBox, Mezeo, FTP, and any WebDav enable cloud. Contact us sales@smestorage.com about our professional option which includes the ability to encrypt the backup and to also schedule it.Back your WordPress blog up to any one of 10 storage clouds including S3, CloudFiles, MobileME, Gmail & Box.net
 
 == Installation ==
 Please note the following with this Plug-In
