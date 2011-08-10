@@ -1,4 +1,4 @@
-<?
+<?php
 //define('_SERVICE_URL','http://www.smetube.com/smestorage/api/');
 define('_SERVICE_URL','http://www.smestorage.com/api/');
 
