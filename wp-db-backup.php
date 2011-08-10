@@ -2,64 +2,51 @@
 /*
 Plugin Name: WordPress Database Backup for SME Storage
 Plugin URI: http://www.smestorage.com/
-Description: On-demand backup of your WordPress database. Based on <a href="http://wordpress.org/extend/plugins/wp-db-backup/">WP-DB-Backup</a> This plug-in is licensed under GNU GPL, version 2. Source code is available from <a href="http://code.google.com/p/smestorage/">http://code.google.com/p/smestorage</a>
+Description: On-demand backup of your WordPress database. Based on <a href="http://wordpress.org/extend/plugins/wp-db-backup/">WP-DB-Backup</a> This plugin is licensed under GNU GPL, version 2. Source code is available from <a href="http://code.google.com/p/smestorage/">http://code.google.com/p/smestorage</a>
 Author: SME Storage 
 Author URI: http://www.smestorage.com/
-Version: 1.5
-
+Version: 1.8
 */
  session_start();		
 
 
- add_action( 'admin_menu', create_function( '$a', "remove_action( 'load-plugins.php', 'wp_update_plugins' );") );
+ add_action( 'admin_menu', create_function( '$a', "remove_action( 'load-plugins.php', 'wp_update_plugins' );"));
  # Why use the admin_menu hook? It's the only one available between the above hook being added and being applied
- add_action( 'admin_init', create_function( '$a', "remove_action( 'admin_init', 'wp_update_plugins' );"), 2 );
- add_action( 'init', create_function( '$a', "remove_action( 'init', 'wp_update_plugins' );"), 2 );
- add_filter( 'pre_option_update_plugins', create_function( '$a', "return null;" ) );
+ add_action( 'admin_init', create_function( '$a', "remove_action( 'admin_init', 'wp_update_plugins' );"), 2);
+ add_action( 'init', create_function( '$a', "remove_action( 'init', 'wp_update_plugins' );"), 2);
+ add_filter( 'pre_option_update_plugins', create_function( '$a', "return null;" ));
 
  # 2.8:
- remove_action( 'load-plugins.php', 'wp_update_plugins' );
- remove_action( 'load-update.php', 'wp_update_plugins' );
- remove_action( 'admin_init', '_maybe_update_plugins' );
- remove_action( 'wp_update_plugins', 'wp_update_plugins' );
- add_filter( 'pre_transient_update_plugins', create_function( '$a', "return null;" ) );
+ remove_action('load-plugins.php', 'wp_update_plugins');
+ remove_action('load-update.php', 'wp_update_plugins');
+ remove_action('admin_init', '_maybe_update_plugins');
+ remove_action('wp_update_plugins', 'wp_update_plugins');
+ add_filter('pre_transient_update_plugins', create_function( '$a', "return null;" ));
 
  add_option('username','');
  add_option('password','');
  
- $username = $_REQUEST['username'];
- $password = $_REQUEST['password'];
+ $username=$_REQUEST['username'];
+ $password=$_REQUEST['password'];
  
- if(strlen($username)>0)
- {
- 	update_option('username',$username);
+ if(strlen($username)>0){
+	update_option('username',$username);
 	update_option('password',$password);
  }
  
  
  
  
-$rand = substr( md5( md5( DB_PASSWORD ) ), -5 );
+$rand = substr(md5(md5(DB_PASSWORD)), -5);
 global $wpdbb_content_dir, $wpdbb_content_url, $wpdbb_plugin_dir;
-$wpdbb_content_dir = ( defined('WP_CONTENT_DIR') ) ? WP_CONTENT_DIR : ABSPATH . 'wp-content';
-$wpdbb_content_url = ( defined('WP_CONTENT_URL') ) ? WP_CONTENT_URL : get_option('siteurl') . '/wp-content';
-$wpdbb_plugin_dir = ( defined('WP_PLUGIN_DIR') ) ? WP_PLUGIN_DIR : $wpdbb_content_dir . '/plugins';
+$wpdbb_content_dir=(defined('WP_CONTENT_DIR')) ? WP_CONTENT_DIR : ABSPATH . 'wp-content';
+$wpdbb_content_url=(defined('WP_CONTENT_URL')) ? WP_CONTENT_URL : get_option('siteurl') . '/wp-content';
+$wpdbb_plugin_dir =(defined('WP_PLUGIN_DIR') ) ? WP_PLUGIN_DIR : $wpdbb_content_dir . '/plugins';
 
-if(!defined('WP_BACKUP_DIR')){
-	define('WP_BACKUP_DIR', str_replace('\\', '/', $wpdbb_content_dir) . '/backup-' . $rand . '/');
-}
-
-if(!defined('WP_UPLOADS_DIR')){
-	define('WP_UPLOADS_DIR', str_replace('\\', '/', $wpdbb_content_dir) . '/uploads/');
-}
-
-if(!defined('WP_BACKUP_URL')){
-	define('WP_BACKUP_URL', str_replace('\\', '/', $wpdbb_content_url) . '/backup-' . $rand . '/');
-}
-
-if(!defined('ROWS_PER_SEGMENT')){
-	define('ROWS_PER_SEGMENT', 100);
-}
+if(!defined('WP_BACKUP_DIR'))		define('WP_BACKUP_DIR', str_replace('\\', '/', $wpdbb_content_dir) . '/backup-' . $rand . '/');
+if(!defined('WP_UPLOADS_DIR'))	define('WP_UPLOADS_DIR', str_replace('\\', '/', $wpdbb_content_dir) . '/uploads/');
+if(!defined('WP_BACKUP_URL'))		define('WP_BACKUP_URL', str_replace('\\', '/', $wpdbb_content_url) . '/backup-' . $rand . '/');
+if(!defined('ROWS_PER_SEGMENT'))define('ROWS_PER_SEGMENT', 100);
 
 /** 
  * Set MOD_EVASIVE_OVERRIDE to true 
@@ -67,13 +54,8 @@ if(!defined('ROWS_PER_SEGMENT')){
  * if the backup stops prematurely.
  */
 // define('MOD_EVASIVE_OVERRIDE', false);
-if(!defined('MOD_EVASIVE_DELAY')){
-	define('MOD_EVASIVE_DELAY', '500');
-}
-
-if(!defined('_SERVICE_URL')){
-	define('_SERVICE_URL','http://smestorage.com/api/');
-}
+if(!defined('MOD_EVASIVE_DELAY'))	define('MOD_EVASIVE_DELAY', '500');
+if(!defined('_SERVICE_URL'))			define('_SERVICE_URL','http://smestorage.com/api/');
 
 
 class wpdbBackup {
@@ -86,7 +68,7 @@ class wpdbBackup {
 	var $basename;
 	var $page_url;
 	var $referer_check_key;
-	var $version = '2.1.5-alpha';
+	var $version = '1.8';
 
 	function gzip() {
 		return function_exists('gzopen');
@@ -94,10 +76,10 @@ class wpdbBackup {
 
 	function module_check() {
 		$mod_evasive = false;
-		if( true === MOD_EVASIVE_OVERRIDE ) return true;
-		if( false === MOD_EVASIVE_OVERRIDE ) return false;
-		if( function_exists('apache_get_modules') ) 
-			foreach( (array) apache_get_modules() as $mod ) 
+		if(true ===MOD_EVASIVE_OVERRIDE) return true;
+		if(false===MOD_EVASIVE_OVERRIDE) return false;
+		if(function_exists('apache_get_modules')) 
+			foreach((array) apache_get_modules() as $mod)
 				if( false !== strpos($mod,'mod_evasive') || false !== strpos($mod,'mod_dosevasive') )
 					return true;
 		return false;
@@ -115,8 +97,8 @@ class wpdbBackup {
 		
 		$table_prefix = ( isset( $table_prefix ) ) ? $table_prefix : $wpdb->prefix;
 
-		$u = get_option('username');
-		$p = get_option('password');
+		$u=get_option('username');
+		$p=get_option('password');
 
 //		$datum = date("Ymd_B_____h_i_s");
 		$datum = date("Ymd_B");
@@ -124,19 +106,14 @@ class wpdbBackup {
 		if($this->gzip()) $this->backup_filename .= '.gz';
 		$path =WP_BACKUP_DIR.$this->backup_filename;
 
-		$src = WP_PLUGIN_URL."/wp-db-backup/sme/index.php?u=".$u."&p=".$p."&path=".$path;
+		$src = WP_PLUGIN_URL."/smestorage-multi-cloud-files-plug-in/sme/index.php?u=".$u."&p=".$p."&path=".$path;
 		if(!isset($_GET['_wpnonce'])){
 			$_SESSION['path2']='';
-			if(!isset($_GET['_wpnonce'])){
-				$_SESSION['path2']=$_SESSION['path'];
-			}
+			if(!isset($_GET['_wpnonce']))	$_SESSION['path2']=$_SESSION['path'];
 			$_SESSION['path']=$path;
 		}
 		
-		if($_REQUEST['status']!="completed")
-		{
-			$_SESSION['testing123'] = $src;
-		}
+		if($_REQUEST['status']!="completed")	$_SESSION['testing123'] = $src;
 		
 		$possible_names = array(
 			'categories',
@@ -156,9 +133,7 @@ class wpdbBackup {
 		);
 
 		foreach( $possible_names as $name ) {
-			if( isset( $wpdb->{$name} ) ) {
-				$this->core_table_names[] = $wpdb->{$name};
-			}
+			if(isset($wpdb->{$name}))	$this->core_table_names[] = $wpdb->{$name};
 		}
 	
 		$this->backup_dir = trailingslashit(apply_filters('wp_db_b_backup_dir', WP_BACKUP_DIR));
@@ -205,6 +180,7 @@ class wpdbBackup {
 	}
 	
 	function init(){
+		ini_set('max_execution_time', 3000); 				// increase script timeout value
 		$this->can_user_backup();
 		if(isset($_GET['backup'])) {
 			$via = isset($_GET['via']) ? $_GET['via'] : 'http';
@@ -255,9 +231,9 @@ class wpdbBackup {
 	}
 
 	function send_backup_to_SME($filename){
-		include('../wp-content/plugins/wp-db-backup/http.php');
-		include('../wp-content/plugins/wp-db-backup/class.xmltoarray.php');
-		include('../wp-content/plugins/wp-db-backup/lib.php');
+		include('../wp-content/plugins/smestorage-multi-cloud-files-plug-in/http.php');
+		include('../wp-content/plugins/smestorage-multi-cloud-files-plug-in/class.xmltoarray.php');
+		include('../wp-content/plugins/smestorage-multi-cloud-files-plug-in/lib.php');
 		
 		if(!is_writable($this->backup_dir)){
 			$error=(__('Could not open the backup file for writing!','wp-db-backup'));
@@ -397,7 +373,13 @@ class wpdbBackup {
 	}
 
 	function make_one_backup_file($newPath, $files, $delete_old=0){
-		include('../wp-content/plugins/wp-db-backup/pclzip.lib.php');
+/*
+error_reporting(E_ALL);
+ini_set('error_reporting', E_ALL);
+ini_set('display_errors', true);
+*/
+		ini_set('max_execution_time', 6000); 				// increase script timeout value
+		include_once('../wp-content/plugins/smestorage-multi-cloud-files-plug-in/pclzip.lib.php');
 		$tmp_path=$newPath . '_tmp';
 
 		$csuccess=0;
@@ -407,9 +389,12 @@ class wpdbBackup {
 		for($i=0; !empty($files[$i]); $i++){
 			if(!file_exists($files[$i])) continue;
 			if($L==0){
-				$e=$archive->create($files[$i], PCLZIP_OPT_REMOVE_PATH, dirname($files[$i]));
+				$e=$archive->create($files[$i], PCLZIP_OPT_REMOVE_PATH, dirname($files[$i]), PCLZIP_OPT_NO_COMPRESSION);
+#				$e=$archive->create($files[$i], PCLZIP_OPT_REMOVE_PATH, dirname($files[$i]));
+				$L=1;
 			}else{
-				$e=$archive->add($files[$i], PCLZIP_OPT_REMOVE_PATH, dirname($files[$i]));
+				$e=$archive->add($files[$i], PCLZIP_OPT_REMOVE_PATH, dirname($files[$i]), PCLZIP_OPT_NO_COMPRESSION);
+#				$e=$archive->add($files[$i], PCLZIP_OPT_REMOVE_PATH, dirname($files[$i]));
 			}
 
 			if($e==0){
@@ -417,8 +402,6 @@ class wpdbBackup {
 			}else{
 				$csuccess++;
 			}
-			
-			$L++;
 		}
 
 		if($delete_old){
@@ -451,9 +434,11 @@ class wpdbBackup {
 			if(is_file($fname)){
 #				echo 'File '.$file.'<br>';
 				if(!file_exists($archive)){
-					$e=$a->create($fname, PCLZIP_OPT_REMOVE_PATH, $ignorePath);
+					$e=$a->create($fname, PCLZIP_OPT_REMOVE_PATH, $ignorePath, PCLZIP_OPT_NO_COMPRESSION);
+#					$e=$a->create($fname, PCLZIP_OPT_REMOVE_PATH, $ignorePath);
 				}else{
-					$e=$a->add($fname, PCLZIP_OPT_REMOVE_PATH, $ignorePath);
+					$e=$a->add($fname, PCLZIP_OPT_REMOVE_PATH, $ignorePath, PCLZIP_OPT_NO_COMPRESSION);
+#					$e=$a->add($fname, PCLZIP_OPT_REMOVE_PATH, $ignorePath);
 				}
 			}else{
 #				echo 'Dir '.$file.'<br>';
@@ -465,9 +450,11 @@ class wpdbBackup {
 #echo "countFiles=$countElements<br>";
 		if($countElements<1){
 			if(!file_exists($archive)){
-				$e=$a->create($dir, PCLZIP_OPT_REMOVE_PATH, $ignorePath);
+				$e=$a->create($dir, PCLZIP_OPT_REMOVE_PATH, $ignorePath, PCLZIP_OPT_NO_COMPRESSION);
+#				$e=$a->create($dir, PCLZIP_OPT_REMOVE_PATH, $ignorePath);
 			}else{
-				$e=$a->add($dir, PCLZIP_OPT_REMOVE_PATH, $ignorePath);
+				$e=$a->add($dir, PCLZIP_OPT_REMOVE_PATH, $ignorePath, PCLZIP_OPT_NO_COMPRESSION);
+#				$e=$a->add($dir, PCLZIP_OPT_REMOVE_PATH, $ignorePath);
 			}
 		}
 		
@@ -475,16 +462,20 @@ class wpdbBackup {
 	}
 
 	function backup_uploads($filename){
-		include('../wp-content/plugins/wp-db-backup/pclzip.lib.php');
+/*
+error_reporting(E_ALL);
+ini_set('error_reporting', E_ALL);
+ini_set('display_errors', true);
+*/
+		ini_set('max_execution_time', 6000); 				// increase script timeout value
+		include_once('../wp-content/plugins/smestorage-multi-cloud-files-plug-in/pclzip.lib.php');
 
 		$error='';
 
 		$path=$this->backup_dir . $filename;
 		$path=substr($path, 0, strrpos($path, '.sql')) .'_uploads.zip';
 
-		if(!is_writable($this->backup_dir)){
-			$error=(__('Could not open the backup file for writing!','wp-db-backup'));
-		}
+		if(!is_writable($this->backup_dir))	$error=(__('Could not open the backup file for writing!','wp-db-backup'));
 
 		if(strlen($error)<1){
 #echo $path . '<br>';
@@ -540,8 +531,8 @@ class wpdbBackup {
 		$u = get_option('username');
 		$p = get_option('password');
 		$path=WP_BACKUP_DIR.$this->backup_filename;
-		$src =WP_PLUGIN_URL."/wp-db-backup/sme/index.php?u=".$u."&p=".$p."&path=".$path;
-		$src2=WP_PLUGIN_URL."/wp-db-backup/sme/index.php?type=uploads&path=".$path;
+		$src =WP_PLUGIN_URL."/smestorage-multi-cloud-files-plug-in/sme/index.php?u=".$u."&p=".$p."&path=".$path;
+		$src2=WP_PLUGIN_URL."/smestorage-multi-cloud-files-plug-in/sme/index.php?type=uploads&path=".$path;
 */
 		$lurl=get_option('siteurl') . '/wp-admin/';
 		echo "<div class='wrap'>";
@@ -1226,7 +1217,8 @@ class wpdbBackup {
 					foreach ($table_data as $row) {
 						$values = array();
 						foreach ($row as $key => $value) {
-							if($ints[strtolower($key)]) {
+#							if($ints[strtolower($key)]) {
+							if(isset($ints[strtolower($key)])){																#!!!!!!!!!!!!!!!!!!!!!!
 								// make sure there are no blank spots in the insert syntax,
 								// yet try to avoid quotation marks around integers
 								$value = ( null === $value || '' === $value) ? $defs[strtolower($key)] : $value;
@@ -1531,7 +1523,7 @@ class wpdbBackup {
 		// Get complete db table list	
 		$all_tables = $wpdb->get_results("SHOW TABLES", ARRAY_N);
 		$all_tables = array_map(create_function('$a', 'return $a[0];'), $all_tables);
-		// Get list of WP tables that actually exist in this DB (for 1.6 compat!)
+		// Get list of WP tables that actually exist in this DB (for 1.8 compat!)
 		$wp_backup_default_tables = array_intersect($all_tables, $this->core_table_names);
 		// Get list of non-WP tables
 		$other_tables = array_diff($all_tables, $wp_backup_default_tables);
@@ -1581,7 +1573,7 @@ class wpdbBackup {
 		<h2><?php _e('Cloud Backup','wp-db-backup') ?></h2>
 		<h3>SMEStorage Cloud Backup</h3>
 		<p>This plug-in enables you to backup your WordPress database and content to SMEStorage which uses its cloud gateway to enable you to store your files directly on the storage clouds of your choice. These include Amazon S3, RackSpace Cloud Files, Box.net, Microsoft SkyDrive, Microsoft Live Mesh, Google Docs, DropBox, Mezeo, FTP, and any WebDav enable cloud. Contact us <a href="mailto:sales@smestorage.com">sales@smestorage.com</a> about our professional option which includes the ability to encrypt the backup and to also schedule it.</p>
-		<?  $username = get_option('username');
+		<?php  $username = get_option('username');
  		    $password = get_option('password');
 		
 			if(strlen($_POST['username'])>0 || strlen($_POST['password'])>0)
@@ -1668,7 +1660,7 @@ class wpdbBackup {
 		</fieldset>
 		<?php do_action('wp_db_b_backup_opts'); ?>
 		</form>
-		<?
+		<?php
 			$username = str_replace('"', '&quot;', get_option('username'));
 			$password = str_replace('"', '&quot;', get_option('password'));
 		?>
@@ -1677,9 +1669,9 @@ class wpdbBackup {
 		 <form name="form3" action="tools.php?page=wp-db-backup" method="post">
 		 
 
-		 <tr><td>Username&nbsp;&nbsp;<input type="text" name="username" value="<? echo $username;?>" /></td></tr>
+		 <tr><td>Username&nbsp;&nbsp;<input type="text" name="username" value="<?php echo $username;?>" /></td></tr>
 		
-		 <tr><td>Password&nbsp;&nbsp;<input type="password" name="password" value="<? echo $password;?>" /></td></tr>
+		 <tr><td>Password&nbsp;&nbsp;<input type="password" name="password" value="<?php echo $password;?>" /></td></tr>
 		
 		 <tr><td><input type="submit" value="submit" /></td></tr>
 		 </form>
@@ -1823,7 +1815,9 @@ class wpdbBackup {
 		global $wp_version;
 		if( function_exists('wp_verify_nonce') ) return true;
 		else {
-			$this->error(array('kind' => $kind, 'loc' => $loc, 'msg' => sprintf(__('Your WordPress version, %1s, lacks important security features without which it is unsafe to use the WP-DB-Backup plugin.  Hence, this plugin is automatically disabled.  Please consider <a href="%2s">upgrading WordPress</a> to a more recent version.','wp-db-backup'),$wp_version,'http://wordpress.org/download/')));
+			$msg=sprintf(__('Your WordPress version, %1s, lacks important security features without which it is unsafe to use the WP-DB-Backup plugin.  Hence, this plugin is automatically disabled.  Please consider <a href="%2s">upgrading WordPress</a> to a more recent version.','wp-db-backup'),$wp_version,'http://wordpress.org/download/');
+			$msg=str_replace('WP-DB-Backup', 'SMEStorage-Multi-Cloud-Files', $msg);
+			$this->error(array('kind' => $kind, 'loc' => $loc, 'msg' => $msg));
 			return false;
 		}
 	}
